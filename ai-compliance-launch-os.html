@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Compliance Launch OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Epilogue:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c10;
+  --surface: #0d1117;
+  --surface2: #111820;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #00e5a0;
+  --accent-dim: rgba(0,229,160,0.10);
+  --amber: #fbbf24;
+  --red: #f87171;
+  --blue: #60a5fa;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --dim: #1e2d3d;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Epilogue', 'Noto Sans SC', sans-serif;
+  overflow-x: hidden;
+}
+body.zh { font-family: 'Noto Sans SC', 'Epilogue', sans-serif; }
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px);
+  pointer-events: none; z-index: 9999;
+}
+.dot-grid {
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(0,229,160,0.10) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none; z-index: 0;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 40%, black 30%, transparent 100%);
+}
+
+/* NAV */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 60px;
+  background: rgba(8,12,16,0.90);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-left { display: flex; align-items: center; gap: 36px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-box {
+  width: 28px; height: 28px; background: var(--accent);
+  border-radius: 5px; display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #080c10;
+}
+.logo-name { font-size: 14px; font-weight: 700; letter-spacing: 0.01em; color: var(--text); }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--muted); text-decoration: none; letter-spacing: 0.08em;
+  text-transform: uppercase; transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.lang-switch { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; overflow: hidden; }
+.lang-btn {
+  padding: 5px 12px; font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 500; background: transparent; border: none;
+  color: var(--muted); cursor: pointer; transition: all 0.15s;
+}
+.lang-btn.active { background: var(--accent); color: #080c10; }
+.nav-cta {
+  padding: 7px 18px; background: var(--accent); color: #080c10;
+  border-radius: 5px; font-size: 12px; font-weight: 700;
+  text-decoration: none; transition: opacity 0.15s;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* LAYOUT */
+section { position: relative; z-index: 1; }
+.container { max-width: 1080px; margin: 0 auto; padding: 0 48px; }
+
+/* HERO */
+#hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 0 80px; }
+.t-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent);
+  background: var(--accent-dim); border: 1px solid rgba(0,229,160,0.22);
+  border-radius: 4px; padding: 5px 14px; margin-bottom: 36px; letter-spacing: 0.06em;
+}
+.t-cur { width: 6px; height: 12px; background: var(--accent); border-radius: 1px; animation: blink 1s step-end infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+h1 {
+  font-size: clamp(38px, 5.5vw, 70px); font-weight: 900; line-height: 1.05;
+  letter-spacing: -0.03em; margin-bottom: 28px; max-width: 860px;
+}
+.h1-g { color: var(--accent); }
+.h1-d { color: var(--muted); }
+.hero-sub { font-size: 17px; color: var(--muted); max-width: 520px; line-height: 1.75; margin-bottom: 18px; }
+.hero-clarify {
+  display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted);
+  margin-bottom: 44px;
+}
+.c-no { color: var(--red); text-decoration: line-through; }
+.c-yes { color: var(--accent); }
+.c-sl { color: var(--dim); margin: 0 2px; }
+.hero-acts { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 64px; }
+.btn-p {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--accent); color: #080c10; padding: 12px 24px; border-radius: 6px;
+  font-size: 13px; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
+  font-family: inherit; transition: all 0.15s;
+}
+.btn-p:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,229,160,0.2); }
+.btn-o {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent; color: var(--text); padding: 12px 24px; border-radius: 6px;
+  font-size: 13px; font-weight: 600; text-decoration: none; border: 1px solid var(--border2);
+  font-family: inherit; transition: all 0.15s; cursor: pointer;
+}
+.btn-o:hover { border-color: var(--accent); color: var(--accent); }
+
+/* terminal */
+.hero-term {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+}
+.term-hdr {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; background: #0a0f17; border-bottom: 1px solid var(--border);
+}
+.d-r{width:10px;height:10px;border-radius:50%;background:#ff5f57;}
+.d-y{width:10px;height:10px;border-radius:50%;background:#febc2e;}
+.d-g{width:10px;height:10px;border-radius:50%;background:#28c840;}
+.term-ttl { margin-left:8px; color: var(--muted); font-size: 11px; }
+.term-body { padding: 20px; line-height: 2.1; }
+.tl { display: flex; gap: 12px; }
+.tp { color: var(--accent); user-select: none; }
+.tc { color: var(--text); }
+.to { color: var(--muted); padding-left: 20px; }
+.ts { color: var(--accent); }
+.tw { color: var(--amber); }
+.te { color: var(--red); }
+.ti { color: var(--blue); }
+.tb { height: 8px; }
+
+.jur-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-top: 28px; border-top: 1px solid var(--border); }
+.jur-lbl { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-right:4px; }
+.jt { font-family:'JetBrains Mono',monospace; font-size:11px; padding:4px 12px; background:var(--surface); border:1px solid var(--border2); border-radius:4px; color:var(--text); }
+.jt.on { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+.jt.soon { opacity:0.4; }
+
+/* SECTION HEADER */
+.eye { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:14px; }
+.stitle { font-size: clamp(26px, 3.5vw, 42px); font-weight:800; letter-spacing:-0.02em; margin-bottom:16px; line-height:1.15; }
+.ssub { font-size:16px; color:var(--muted); max-width:540px; line-height:1.75; margin-bottom:52px; }
+
+/* NOT A */
+#nota { padding:80px 0; border-top:1px solid var(--border); background:var(--surface); }
+.nota-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; background:var(--border); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+.nc { background:var(--surface); padding:36px; }
+.nc.yes-col { background:rgba(0,229,160,0.025); }
+.nc-head { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:24px; display:flex; align-items:center; gap:8px; }
+.nc-head.nh-no { color:var(--red); }
+.nc-head.nh-yes { color:var(--accent); }
+.nc-items { display:flex; flex-direction:column; gap:14px; }
+.nc-item { display:flex; gap:12px; align-items:start; font-size:14px; color:var(--muted); line-height:1.6; }
+.ni { flex-shrink:0; margin-top:2px; font-size:12px; }
+.nc.no-col .ni { color:var(--red); }
+.nc.yes-col .ni { color:var(--accent); }
+
+/* PIPELINE */
+#pipeline { padding:100px 0; }
+.pflow { margin-top:48px; position:relative; }
+.psteps { display:flex; gap:0; position:relative; }
+.psteps::before { content:''; position:absolute; top:28px; left:28px; right:28px; height:1px; background:linear-gradient(90deg,var(--accent),var(--blue),var(--amber)); z-index:0; }
+.ps { flex:1; display:flex; flex-direction:column; align-items:center; gap:16px; position:relative; z-index:1; text-align:center; padding:0 8px; }
+.pn { width:56px; height:56px; border-radius:50%; background:var(--bg); border:2px solid var(--border2); display:flex; align-items:center; justify-content:center; font-size:18px; transition:all 0.2s; }
+.ps:hover .pn { border-color:var(--accent); box-shadow:0 0 20px rgba(0,229,160,0.2); }
+.pname { font-size:12px; font-weight:700; letter-spacing:0.02em; color:var(--text); }
+.ptag { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:0.06em; }
+
+/* MODULES */
+#modules { padding:100px 0; background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.mods-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(310px,1fr)); gap:14px; }
+.mcard { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:26px; position:relative; transition:border-color 0.2s,transform 0.2s; overflow:hidden; }
+.mcard:hover { border-color:rgba(0,229,160,0.4); transform:translateY(-2px); }
+.mcard::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),transparent); opacity:0; transition:opacity 0.2s; }
+.mcard:hover::after { opacity:1; }
+.midx { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.1em; margin-bottom:10px; }
+.mname { font-size:16px; font-weight:700; margin-bottom:8px; color:var(--text); }
+.mdesc { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:16px; }
+.chips { display:flex; flex-wrap:wrap; gap:6px; }
+.chip { font-family:'JetBrains Mono',monospace; font-size:9px; padding:3px 8px; border-radius:3px; background:rgba(0,229,160,0.07); border:1px solid rgba(0,229,160,0.15); color:var(--accent); letter-spacing:0.05em; }
+
+/* ARCHITECTURE */
+#arch { padding:100px 0; }
+.astack { display:flex; flex-direction:column; gap:3px; margin-top:48px; }
+.arow { display:grid; grid-template-columns:40px 210px 1fr 150px; align-items:center; gap:20px; padding:18px 24px; background:var(--surface); border:1px solid var(--border); border-radius:7px; transition:border-color 0.2s; cursor:default; }
+.arow:hover { border-color:rgba(0,229,160,0.3); }
+.an { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:0.08em; text-align:center; }
+.aname { font-size:13px; font-weight:700; color:var(--accent); }
+.adesc { font-size:12px; color:var(--muted); line-height:1.5; }
+.abadge { font-family:'JetBrains Mono',monospace; font-size:9px; padding:4px 10px; border-radius:3px; text-align:center; letter-spacing:0.05em; }
+.bc { background:rgba(0,229,160,0.08); color:var(--accent); border:1px solid rgba(0,229,160,0.2); }
+.be { background:rgba(96,165,250,0.08); color:var(--blue); border:1px solid rgba(96,165,250,0.2); }
+.bl { background:rgba(251,191,36,0.08); color:var(--amber); border:1px solid rgba(251,191,36,0.2); }
+
+/* DEPLOY */
+#deploy { padding:80px 0; background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.dcards { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:48px; }
+.dcard { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:24px; }
+.dicon { font-size:24px; margin-bottom:14px; }
+.dmode { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.1em; margin-bottom:6px; }
+.dname { font-size:15px; font-weight:700; margin-bottom:8px; }
+.ddesc { font-size:12px; color:var(--muted); line-height:1.6; }
+
+/* PRICING */
+#pricing { padding:100px 0; }
+.pgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; margin-top:48px; }
+.pcard { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:30px; position:relative; }
+.pcard.feat { border-color:var(--accent); }
+.pcard.feat::before { content:attr(data-lbl); position:absolute; top:-1px; right:20px; background:var(--accent); color:#080c10; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:4px 10px; border-radius:0 0 6px 6px; }
+.ptier { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:12px; }
+.pname { font-size:20px; font-weight:800; margin-bottom:6px; }
+.ptag { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:24px; }
+.pval { font-family:'JetBrains Mono',monospace; font-size:26px; color:var(--text); margin-bottom:4px; }
+.pcad { font-size:11px; color:var(--muted); margin-bottom:28px; font-family:'JetBrains Mono',monospace; }
+.plist { list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:28px; }
+.plist li { display:flex; align-items:start; gap:10px; font-size:13px; color:var(--muted); line-height:1.5; }
+.plist li::before { content:'//'; font-family:'JetBrains Mono',monospace; color:var(--accent); font-size:11px; flex-shrink:0; margin-top:1px; }
+
+/* ROADMAP */
+#roadmap { padding:100px 0; background:var(--surface); border-top:1px solid var(--border); }
+.rmcols { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2px; background:var(--border); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-top:48px; }
+.rmp { background:var(--surface); padding:28px; }
+.rmp.cur { background:rgba(0,229,160,0.03); }
+.rmlbl { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.rmp.cur .rmlbl { color:var(--accent); }
+.rmname { font-size:15px; font-weight:700; margin-bottom:20px; line-height:1.3; }
+.rmp:not(.cur) .rmname { color:var(--muted); }
+.rmitems { display:flex; flex-direction:column; gap:8px; }
+.rmi { display:flex; gap:8px; align-items:start; font-size:12px; color:var(--muted); line-height:1.5; }
+.rmi::before { content:'─'; font-family:'JetBrains Mono',monospace; color:var(--dim); flex-shrink:0; }
+.rmp.cur .rmi::before { color:var(--accent); }
+
+/* CTA */
+#cta { padding:100px 0; text-align:center; }
+.cta-inner { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:72px 48px; position:relative; overflow:hidden; }
+.cta-inner::before { content:''; position:absolute; bottom:-60px; left:50%; transform:translateX(-50%); width:500px; height:300px; background:radial-gradient(ellipse,rgba(0,229,160,0.06) 0%,transparent 70%); pointer-events:none; }
+.cta-eye { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:16px; }
+.cta-title { font-size:clamp(28px,4vw,48px); font-weight:900; letter-spacing:-0.02em; margin-bottom:16px; }
+.cta-sub { font-size:16px; color:var(--muted); max-width:480px; margin:0 auto 40px; line-height:1.7; }
+.cta-btns { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+
+/* FOOTER */
+footer { padding:28px 48px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; position:relative; z-index:1; }
+.fcopy { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:0.04em; }
+.flinks { display:flex; gap:24px; }
+.flinks a { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); text-decoration:none; transition:color 0.15s; }
+.flinks a:hover { color:var(--accent); }
+
+/* LANG */
+[data-zh] { display:none; }
+body.zh [data-en] { display:none; }
+body.zh [data-zh] { display:revert; }
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .container{padding:0 20px;}
+  .nota-grid{grid-template-columns:1fr;}
+  .arow{grid-template-columns:1fr;gap:8px;}
+  .an,.abadge{display:none;}
+  .psteps::before{display:none;}
+  .psteps{flex-direction:column;gap:20px;}
+  footer{flex-direction:column;gap:16px;text-align:center;}
+  .flinks{flex-wrap:wrap;justify-content:center;}
+  h1{font-size:clamp(32px,8vw,52px);}
+}
+</style>
+</head>
+<body>
+<div class="dot-grid"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <a href="#" class="logo">
+      <div class="logo-box">OS</div>
+      <span class="logo-name">AI Compliance Launch OS</span>
+    </a>
+    <div class="nav-links">
+      <a href="#pipeline" data-en>How It Works</a>
+      <a href="#pipeline" data-zh>工作原理</a>
+      <a href="#modules" data-en>Modules</a>
+      <a href="#modules" data-zh>模块</a>
+      <a href="#arch" data-en>Architecture</a>
+      <a href="#arch" data-zh>架构</a>
+      <a href="#pricing" data-en>Pricing</a>
+      <a href="#pricing" data-zh>定价</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+    </div>
+    <a href="#cta" class="nav-cta" data-en>Request Access</a>
+    <a href="#cta" class="nav-cta" data-zh>申请体验</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div class="t-badge">
+      <div class="t-cur"></div>
+      <span data-en>compliance-as-code &nbsp;·&nbsp; v0.1 early access</span>
+      <span data-zh>合规即代码 &nbsp;·&nbsp; v0.1 早期访问</span>
+    </div>
+
+    <h1>
+      <span data-en>Ship AI globally.<br><span class="h1-g">Without the compliance</span><br><span class="h1-d">guesswork.</span></span>
+      <span data-zh>AI 产品跨国上线。<br><span class="h1-g">合规不再是</span><br><span class="h1-d">猜谜游戏。</span></span>
+    </h1>
+
+    <p class="hero-sub" data-en>An engineering operating system that translates regulatory obligations into executable control items, evidence pipelines, and release gates — so your team ships, not stalls.</p>
+    <p class="hero-sub" data-zh>一个工程操作系统，把法规义务转化为可执行控制项、证据流水线与上线门控——让你的团队持续交付，而不是原地等待。</p>
+
+    <div class="hero-clarify">
+      <span data-en><span class="c-no">not a law firm</span><span class="c-sl"> / </span><span class="c-no">not consulting</span><span class="c-sl"> / </span><span class="c-yes">engineering infrastructure</span></span>
+      <span data-zh><span class="c-no">不是律所</span><span class="c-sl"> / </span><span class="c-no">不是咨询服务</span><span class="c-sl"> / </span><span class="c-yes">工程基础设施</span></span>
+    </div>
+
+    <div class="hero-acts">
+      <a href="#cta" class="btn-p"><span data-en>▶ Start Launch Assessment</span><span data-zh>▶ 开始上市评估</span></a>
+      <a href="#pipeline" class="btn-o"><span data-en>See how it works →</span><span data-zh>了解工作原理 →</span></a>
+    </div>
+
+    <div class="hero-term">
+      <div class="term-hdr">
+        <div class="d-r"></div><div class="d-y"></div><div class="d-g"></div>
+        <span class="term-ttl">ai-launch-os — compliance pipeline</span>
+      </div>
+      <div class="term-body">
+        <div class="tl"><span class="tp">$</span><span class="tc" data-en>launch-os assess --product "customer-facing GenAI" --markets EU,UK,SG</span><span class="tc" data-zh>launch-os assess --product "面向用户 GenAI" --markets EU,UK,SG</span></div>
+        <div class="tb"></div>
+        <div class="tl"><span class="to ti" data-en>→ Jurisdiction scan complete: EU AI Act · UK AI Framework · PDPA Singapore</span></div>
+        <div class="tl"><span class="to ti" data-zh>→ 辖区扫描完成：EU AI 法案 · 英国 AI 治理框架 · 新加坡 PDPA</span></div>
+        <div class="tl"><span class="to ts" data-en>✓ Applicability Engine: HIGH_RISK classification triggered</span></div>
+        <div class="tl"><span class="to ts" data-zh>✓ 适用性引擎：HIGH_RISK 分类已触发</span></div>
+        <div class="tl"><span class="to tw" data-en>⚠ Evidence gaps: transparency_doc, bias_eval, human_oversight_log</span></div>
+        <div class="tl"><span class="to tw" data-zh>⚠ 证据缺口：transparency_doc, bias_eval, human_oversight_log</span></div>
+        <div class="tl"><span class="to te" data-en>✗ BLOCKERS (2): DPIA not filed · logging policy missing</span></div>
+        <div class="tl"><span class="to te" data-zh>✗ 阻断项 (2)：DPIA 未归档 · logging policy 缺失</span></div>
+        <div class="tb"></div>
+        <div class="tl"><span class="to" data-en>📄 Launch readiness report → /output/readiness_2025_Q2.pdf</span></div>
+        <div class="tl"><span class="to" data-zh>📄 就绪报告已生成 → /output/readiness_2025_Q2.pdf</span></div>
+        <div class="tl"><span class="tp">$</span><span class="t-cur"></span></div>
+      </div>
+    </div>
+
+    <div class="jur-bar" style="margin-top:28px;">
+      <span class="jur-lbl" data-en>Coverage</span><span class="jur-lbl" data-zh>覆盖范围</span>
+      <span class="jt on">EU AI Act</span>
+      <span class="jt on">UK AI Framework</span>
+      <span class="jt on">SG PDPA / IMDA</span>
+      <span class="jt soon">US EO 14110</span>
+      <span class="jt soon">CN AIGC Regs</span>
+      <span class="jt soon" data-en>+ more</span><span class="jt soon" data-zh>更多即将上线</span>
+    </div>
+  </div>
+</section>
+
+<!-- NOT A -->
+<section id="nota">
+  <div class="container">
+    <div class="eye" data-en>// positioning</div><div class="eye" data-zh>// 产品定位</div>
+    <div class="stitle" data-en>Built for engineers,<br>not auditors.</div>
+    <div class="stitle" data-zh>为工程师而建，<br>不是为审计员。</div>
+    <div class="nota-grid">
+      <div class="nc no-col">
+        <div class="nc-head nh-no">✗ <span data-en>What we are NOT</span><span data-zh>我们不是</span></div>
+        <div class="nc-items">
+          <div class="nc-item"><span class="ni">✗</span><span data-en>A law firm or legal advisory service</span><span data-zh>律所或法律顾问服务</span></div>
+          <div class="nc-item"><span class="ni">✗</span><span data-en>A generic AI governance "control tower" dashboard</span><span data-zh>泛化的 AI 治理"控制塔"仪表盘</span></div>
+          <div class="nc-item"><span class="ni">✗</span><span data-en>A static regulation database you manually search</span><span data-zh>需要手动检索的静态法规数据库</span></div>
+          <div class="nc-item"><span class="ni">✗</span><span data-en>A consulting engagement that takes months to deliver</span><span data-zh>需要数月才能交付的咨询项目</span></div>
+          <div class="nc-item"><span class="ni">✗</span><span data-en>A tool that requires you to hand over source code</span><span data-zh>需要交出源代码才能使用的工具</span></div>
+        </div>
+      </div>
+      <div class="nc yes-col">
+        <div class="nc-head nh-yes">✓ <span data-en>What we ARE</span><span data-zh>我们是</span></div>
+        <div class="nc-items">
+          <div class="nc-item"><span class="ni">✓</span><span data-en>A compliance engineering platform your dev team runs</span><span data-zh>你的工程团队直接运行的合规工程平台</span></div>
+          <div class="nc-item"><span class="ni">✓</span><span data-en>Policy-to-control translation, automated and auditable</span><span data-zh>法规到控制项的自动化、可审计翻译</span></div>
+          <div class="nc-item"><span class="ni">✓</span><span data-en>Evidence pipeline that integrates into your build process</span><span data-zh>集成到构建流程的证据自动化流水线</span></div>
+          <div class="nc-item"><span class="ni">✓</span><span data-en>A release gate, not a report that sits in a folder</span><span data-zh>真正的上线门控，不是压在文件夹里的报告</span></div>
+          <div class="nc-item"><span class="ni">✓</span><span data-en>Black-box by default — no source code required</span><span data-zh>默认黑盒模式，不需要交出源代码</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section id="pipeline">
+  <div class="container">
+    <div class="eye" data-en>// how it works</div><div class="eye" data-zh>// 工作原理</div>
+    <div class="stitle" data-en>From regulation to release gate<br>in one pipeline.</div>
+    <div class="stitle" data-zh>从法规到上线门控，<br>一条流水线打通。</div>
+    <p class="ssub" data-en>We turn legal text into engineering actions. Each step is automated, auditable, and traceable to specific regulatory obligations.</p>
+    <p class="ssub" data-zh>我们把法律语言转化为工程动作。每个步骤自动化、可审计，可追溯到具体法规义务。</p>
+    <div class="pflow">
+      <div class="psteps">
+        <div class="ps"><div class="pn">🌍</div><div class="pname" data-en>Jurisdiction</div><div class="pname" data-zh>辖区识别</div><div class="ptag" data-en>market + product type</div><div class="ptag" data-zh>市场 + 产品类型</div></div>
+        <div class="ps"><div class="pn">⚖️</div><div class="pname" data-en>Applicability</div><div class="pname" data-zh>适用性判断</div><div class="ptag" data-en>which rules apply</div><div class="ptag" data-zh>哪些规则适用</div></div>
+        <div class="ps"><div class="pn">🗂️</div><div class="pname" data-en>Evidence Intake</div><div class="pname" data-zh>证据收集</div><div class="ptag" data-en>artifacts + benchmarks</div><div class="ptag" data-zh>工件 + 基准测试</div></div>
+        <div class="ps"><div class="pn">🔍</div><div class="pname" data-en>Gap Analysis</div><div class="pname" data-zh>缺口分析</div><div class="ptag" data-en>current vs required</div><div class="ptag" data-zh>现状 vs 目标要求</div></div>
+        <div class="ps"><div class="pn">🚦</div><div class="pname" data-en>Release Gate</div><div class="pname" data-zh>上线门控</div><div class="ptag" data-en>ship or block</div><div class="ptag" data-zh>放行或阻断</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="container">
+    <div class="eye" data-en>// mvp modules</div><div class="eye" data-zh>// MVP 核心模块</div>
+    <div class="stitle" data-en>Five modules.<br>One launch-ready output.</div>
+    <div class="stitle" data-zh>五个模块。<br>一份上线就绪输出。</div>
+    <div class="mods-grid">
+      <div class="mcard">
+        <div class="midx">MODULE_01</div>
+        <div class="mname" data-en>Jurisdiction Selector</div><div class="mname" data-zh>辖区选择器</div>
+        <div class="mdesc" data-en>Determines applicable regulatory scope based on country, industry, and product type. Outputs a structured obligation map — not a PDF.</div>
+        <div class="mdesc" data-zh>根据国家、行业和产品类型确定适用监管范围，输出结构化义务地图，而不是 PDF。</div>
+        <div class="chips"><span class="chip">EU AI Act</span><span class="chip">PDPA</span><span class="chip">DSA</span></div>
+      </div>
+      <div class="mcard">
+        <div class="midx">MODULE_02</div>
+        <div class="mname" data-en>Applicability Engine</div><div class="mname" data-zh>适用性引擎</div>
+        <div class="mdesc" data-en>Classifies use-case risk tier and answers which rules apply, why, and what controls are required. Machine-readable, CI/CD-compatible output.</div>
+        <div class="mdesc" data-zh>对用例进行风险分级，回答哪些规则适用、为何适用、需要哪些控制项。机器可读输出，兼容 CI/CD。</div>
+        <div class="chips"><span class="chip">risk-classification</span><span class="chip">trigger-mapping</span></div>
+      </div>
+      <div class="mcard">
+        <div class="midx">MODULE_03</div>
+        <div class="mname" data-en>Evidence Intake Workspace</div><div class="mname" data-zh>证据工作空间</div>
+        <div class="mdesc" data-en>Ingests model cards, API endpoints, benchmark results, and docs. No source code required. Runs black-box evaluation where needed.</div>
+        <div class="mdesc" data-zh>接收 model card、API 端点、benchmark 结果和文档。无需源代码。在必要时运行黑盒评估。</div>
+        <div class="chips"><span class="chip">black-box</span><span class="chip">artifact-based</span><span class="chip">no-code-required</span></div>
+      </div>
+      <div class="mcard">
+        <div class="midx">MODULE_04</div>
+        <div class="mname" data-en>Gap Analysis Engine</div><div class="mname" data-zh>缺口分析引擎</div>
+        <div class="mdesc" data-en>Computes a structured diff between current evidence state and requirements. Outputs prioritised blockers and remediation paths — not boilerplate checklists.</div>
+        <div class="mdesc" data-zh>计算当前证据状态与监管要求的结构化差距，输出有优先级的阻断项和整改路径，而不是样板清单。</div>
+        <div class="chips"><span class="chip">evidence-graph</span><span class="chip">diff-engine</span></div>
+      </div>
+      <div class="mcard">
+        <div class="midx">MODULE_05</div>
+        <div class="mname" data-en>Launch Readiness Report</div><div class="mname" data-zh>上市就绪报告</div>
+        <div class="mdesc" data-en>Auto-generates a structured readiness report with audit-ready evidence trail, linked to specific regulatory obligations. Ready for internal review and external stakeholders.</div>
+        <div class="mdesc" data-zh>自动生成含可审计证据链的结构化就绪报告，关联具体法规义务，可用于内部评审和外部交付。</div>
+        <div class="chips"><span class="chip">auto-generated</span><span class="chip">audit-ready</span><span class="chip">evidence-linked</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="arch">
+  <div class="container">
+    <div class="eye" data-en>// technical architecture</div><div class="eye" data-zh>// 技术架构</div>
+    <div class="stitle" data-en>Six-layer engineering stack.</div>
+    <div class="stitle" data-zh>六层工程架构。</div>
+    <p class="ssub" data-en>Built around policy-to-control translation, multi-depth evidence collection, and privacy-preserving deployment — not just a database in a UI wrapper.</p>
+    <p class="ssub" data-zh>围绕法规到控制项翻译、多深度证据收集和隐私保护部署构建，而不只是套了个 UI 的数据库。</p>
+    <div class="astack">
+      <div class="arow">
+        <div class="an">L1</div>
+        <div><div class="aname" data-en>Regulatory Knowledge Layer</div><div class="aname" data-zh>监管知识层</div></div>
+        <div class="adesc" data-en>Regulations, standards, benchmarks as machine-readable objects: jurisdiction · trigger · obligation · evidence · control · severity</div>
+        <div class="adesc" data-zh>法规、标准与基准测试结构化为机器可读对象：辖区 · 触发器 · 义务 · 证据 · 控制项 · 严重性</div>
+        <div class="abadge bc">CORE</div>
+      </div>
+      <div class="arow">
+        <div class="an">L2</div>
+        <div><div class="aname" data-en>Applicability Engine</div><div class="aname" data-zh>适用性引擎</div></div>
+        <div class="adesc" data-en>Answers "which rules apply and why" — versioned, traceable obligation map per product × market</div>
+        <div class="adesc" data-zh>回答"哪些规则适用及原因"——为每个产品×市场组合输出版本化、可追溯的义务地图</div>
+        <div class="abadge be">ENGINE</div>
+      </div>
+      <div class="arow">
+        <div class="an">L3</div>
+        <div><div class="aname" data-en>Assurance Ingestion Layer</div><div class="aname" data-zh>合规信号采集层</div></div>
+        <div class="adesc" data-en>Unified intake for questionnaires, docs, screenshots, API probes, benchmark outputs, local scan findings</div>
+        <div class="adesc" data-zh>统一接收问卷、文档、截图、API 探针、benchmark 输出与本地扫描结果</div>
+        <div class="abadge bl">LAYER</div>
+      </div>
+      <div class="arow">
+        <div class="an">L4</div>
+        <div><div class="aname" data-en>Black-box Testing Layer</div><div class="aname" data-zh>黑盒测试层</div></div>
+        <div class="adesc" data-en>Evaluates model behavior via API or test env — no source code. Runs safety, bias, transparency, and logging checks</div>
+        <div class="adesc" data-zh>通过 API 或测试环境评估模型行为，无需源代码。执行安全性、偏见、透明度和日志检查</div>
+        <div class="abadge bl">LAYER</div>
+      </div>
+      <div class="arow">
+        <div class="an">L5</div>
+        <div><div class="aname" data-en>Private Scan Layer</div><div class="aname" data-zh>私有扫描层</div></div>
+        <div class="adesc" data-en>Self-hosted scanner, VPC deploy, CI/CD plugin — code never leaves your environment. Bring the engine to the code.</div>
+        <div class="adesc" data-zh>自托管扫描器、VPC 部署和 CI/CD 插件——代码永远不离开你的环境。把引擎带到代码那里。</div>
+        <div class="abadge be">ENGINE</div>
+      </div>
+      <div class="arow">
+        <div class="an">L6</div>
+        <div><div class="aname" data-en>Evidence Graph</div><div class="aname" data-zh>证据图谱</div></div>
+        <div class="adesc" data-en>Obligations, controls, test results, docs, and gaps in an explainable audit chain — single source of truth for launch decisions</div>
+        <div class="adesc" data-zh>将义务、控制项、测试结果、文档和缺口组织为可解释审计链——上线决策的单一可信来源</div>
+        <div class="abadge bc">CORE</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPLOY -->
+<section id="deploy">
+  <div class="container">
+    <div class="eye" data-en>// deployment modes</div><div class="eye" data-zh>// 部署模式</div>
+    <div class="stitle" data-en>Your code never leaves<br>your environment.</div>
+    <div class="stitle" data-zh>代码永远不会<br>离开你的环境。</div>
+    <p class="ssub" data-en>Four deployment modes matched to your security posture. Start SaaS, scale to air-gapped. No source code required at any tier.</p>
+    <p class="ssub" data-zh>四种部署模式适配你的安全要求。从 SaaS 起步，扩展到气隙环境。任何层级均不需要源代码。</p>
+    <div class="dcards">
+      <div class="dcard">
+        <div class="dicon">☁️</div>
+        <div class="dmode">MODE_01</div>
+        <div class="dname" data-en>SaaS Lightweight</div><div class="dname" data-zh>SaaS 轻量模式</div>
+        <div class="ddesc" data-en>Questionnaire, documents, screenshots, and benchmark results. Zero infra overhead. Start in minutes.</div>
+        <div class="ddesc" data-zh>问卷、文档、截图和 benchmark 结果。零基础设施开销，数分钟内启动。</div>
+      </div>
+      <div class="dcard">
+        <div class="dicon">🔌</div>
+        <div class="dmode">MODE_02</div>
+        <div class="dname" data-en>API / Black-box</div><div class="dname" data-zh>API / 黑盒模式</div>
+        <div class="ddesc" data-en>Share a test endpoint, not your code. We probe behavior, generate evidence, surface gaps — without touching your codebase.</div>
+        <div class="ddesc" data-zh>提供测试端点，而非代码。探测行为、生成证据、发现缺口，完全不接触你的代码库。</div>
+      </div>
+      <div class="dcard">
+        <div class="dicon">🔒</div>
+        <div class="dmode">MODE_03</div>
+        <div class="dname" data-en>Single-tenant / VPC</div><div class="dname" data-zh>单租户 / VPC</div>
+        <div class="ddesc" data-en>Isolated deployment in your cloud. Full feature set, data stays in your perimeter. For sensitive product teams.</div>
+        <div class="ddesc" data-zh>隔离部署在你的云环境中，数据不出边界。适合高敏产品团队。</div>
+      </div>
+      <div class="dcard">
+        <div class="dicon">🛡️</div>
+        <div class="dmode">MODE_04</div>
+        <div class="dname" data-en>On-prem / Air-gapped</div><div class="dname" data-zh>本地 / 气隙部署</div>
+        <div class="ddesc" data-en>Fully offline. For defence, finance, and high-regulation sectors where external connectivity is prohibited.</div>
+        <div class="ddesc" data-zh>完全离线，适用于国防、金融和高监管行业中禁止外部网络连接的场景。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="eye" data-en>// pricing</div><div class="eye" data-zh>// 定价方案</div>
+    <div class="stitle" data-en>Start with a launch.<br>Scale with a subscription.</div>
+    <div class="stitle" data-zh>从单次上市评估开始，<br>按订阅扩展。</div>
+    <div class="pgrid">
+      <div class="pcard">
+        <div class="ptier">TIER_01</div>
+        <div class="pname" data-en>Launch Assessment</div><div class="pname" data-zh>上市就绪评估</div>
+        <div class="ptag" data-en>One product, one market. Delivered as a structured report + prioritised blocker list.</div>
+        <div class="ptag" data-zh>单产品、单市场，交付结构化报告和优先级阻断项清单。</div>
+        <div class="pval" data-en>Per project</div><div class="pval" data-zh>按项目计费</div>
+        <div class="pcad" data-en>// one-time · fast turnaround</div><div class="pcad" data-zh>// 一次性 · 快速交付</div>
+        <ul class="plist">
+          <li data-en>Jurisdiction + applicability scan</li><li data-zh>辖区与适用性扫描</li>
+          <li data-en>Evidence gap report</li><li data-zh>证据缺口报告</li>
+          <li data-en>Blocker list + remediation path</li><li data-zh>阻断项清单与整改建议</li>
+          <li data-en>Readiness report (PDF + JSON)</li><li data-zh>上市就绪报告（PDF + JSON）</li>
+        </ul>
+        <a href="#cta" class="btn-o" data-en>Start Assessment →</a>
+        <a href="#cta" class="btn-o" data-zh>开始评估 →</a>
+      </div>
+      <div class="pcard feat" data-lbl="Most Popular">
+        <div class="ptier">TIER_02</div>
+        <div class="pname" data-en>Assurance Workspace</div><div class="pname" data-zh>合规工作空间</div>
+        <div class="ptag" data-en>Continuous evidence management, multi-market tracking, and team collaboration for AI product teams.</div>
+        <div class="ptag" data-zh>持续证据管理、多市场追踪和团队协作，面向 AI 产品团队。</div>
+        <div class="pval" data-en>Annual subscription</div><div class="pval" data-zh>年度订阅</div>
+        <div class="pcad" data-en>// per product · billed annually</div><div class="pcad" data-zh>// 按产品 · 年付</div>
+        <ul class="plist">
+          <li data-en>Everything in Launch Assessment</li><li data-zh>包含上市就绪评估所有内容</li>
+          <li data-en>Multi-market evidence workspace</li><li data-zh>多市场证据工作空间</li>
+          <li data-en>Regulatory change alerts</li><li data-zh>法规变更告警</li>
+          <li data-en>Control item mapping + team collab</li><li data-zh>控制项映射 + 团队协作</li>
+          <li data-en>Benchmark routing + auto-recs</li><li data-zh>基准测试路由 + 自动推荐</li>
+        </ul>
+        <a href="#cta" class="btn-p" data-en>▶ Get Started</a>
+        <a href="#cta" class="btn-p" data-zh>▶ 立即开始</a>
+      </div>
+      <div class="pcard">
+        <div class="ptier">TIER_03</div>
+        <div class="pname" data-en>Private Engineering</div><div class="pname" data-zh>私有工程方案</div>
+        <div class="ptag" data-en>VPC/on-prem, private scan, CI/CD release gate, and custom control packs for enterprise teams.</div>
+        <div class="ptag" data-zh>VPC/本地部署、私有扫描、CI/CD 上线门控与自定义控制包，面向企业级团队。</div>
+        <div class="pval" data-en>Custom</div><div class="pval" data-zh>定制报价</div>
+        <div class="pcad" data-en>// enterprise · contact us</div><div class="pcad" data-zh>// 企业级 · 联系我们</div>
+        <ul class="plist">
+          <li data-en>Everything in Assurance Workspace</li><li data-zh>包含合规工作空间所有内容</li>
+          <li data-en>VPC / on-prem / air-gapped deploy</li><li data-zh>VPC / 本地 / 气隙部署</li>
+          <li data-en>Private scan + CI/CD release gate</li><li data-zh>私有扫描 + CI/CD 上线门控</li>
+          <li data-en>Custom control packs + policy-as-code</li><li data-zh>自定义控制包 + 策略即代码</li>
+          <li data-en>Dedicated support + SLA</li><li data-zh>专属支持 + SLA 保障</li>
+        </ul>
+        <a href="#cta" class="btn-o" data-en>Contact Sales →</a>
+        <a href="#cta" class="btn-o" data-zh>联系销售 →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="container">
+    <div class="eye" data-en>// roadmap</div><div class="eye" data-zh>// 产品路线图</div>
+    <div class="stitle" data-en>Four phases.<br>One operating system.</div>
+    <div class="stitle" data-zh>四个阶段，<br>构建一个操作系统。</div>
+    <div class="rmcols">
+      <div class="rmp cur">
+        <div class="rmlbl" data-en>// PHASE 01 · NOW</div><div class="rmlbl" data-zh>// 阶段 01 · 当前</div>
+        <div class="rmname" data-en>Launch Readiness Copilot</div><div class="rmname" data-zh>上市就绪副驾驶</div>
+        <div class="rmitems">
+          <div class="rmi" data-en>EU / UK / Singapore coverage</div><div class="rmi" data-zh>EU / UK / 新加坡覆盖</div>
+          <div class="rmi" data-en>Black-box + artifact-based review</div><div class="rmi" data-zh>黑盒 + 工件驱动评估</div>
+          <div class="rmi" data-en>Standardised readiness report</div><div class="rmi" data-zh>标准化就绪报告</div>
+          <div class="rmi" data-en>Customer-facing GenAI focus</div><div class="rmi" data-zh>聚焦面向用户的 GenAI</div>
+        </div>
+      </div>
+      <div class="rmp">
+        <div class="rmlbl" data-en>// PHASE 02 · NEXT</div><div class="rmlbl" data-zh>// 阶段 02 · 下一步</div>
+        <div class="rmname" data-en>Evidence & Doc Engine</div><div class="rmname" data-zh>证据与文档引擎</div>
+        <div class="rmitems">
+          <div class="rmi" data-en>Evidence graph (obligation-linked)</div><div class="rmi" data-zh>义务关联的证据图谱</div>
+          <div class="rmi" data-en>Auto-generated doc templates</div><div class="rmi" data-zh>自动生成文档模板</div>
+          <div class="rmi" data-en>Assurance pack builder</div><div class="rmi" data-zh>合规包构建工具</div>
+          <div class="rmi" data-en>Regulatory change alerts</div><div class="rmi" data-zh>法规变更告警</div>
+        </div>
+      </div>
+      <div class="rmp">
+        <div class="rmlbl" data-en>// PHASE 03 · LATER</div><div class="rmlbl" data-zh>// 阶段 03 · 后续</div>
+        <div class="rmname" data-en>Private Scan + CI/CD</div><div class="rmname" data-zh>私有扫描 + CI/CD</div>
+        <div class="rmitems">
+          <div class="rmi" data-en>Local scanner (no egress)</div><div class="rmi" data-zh>本地扫描器（零出站）</div>
+          <div class="rmi" data-en>GitHub / GitLab plugin</div><div class="rmi" data-zh>GitHub / GitLab 插件</div>
+          <div class="rmi" data-en>Automated release gate</div><div class="rmi" data-zh>自动化上线门控</div>
+          <div class="rmi" data-en>VPC + on-prem deploy</div><div class="rmi" data-zh>VPC + 本地部署</div>
+        </div>
+      </div>
+      <div class="rmp">
+        <div class="rmlbl" data-en>// PHASE 04 · FUTURE</div><div class="rmlbl" data-zh>// 阶段 04 · 未来</div>
+        <div class="rmname" data-en>Policy Packs / Compliance-as-Code</div><div class="rmname" data-zh>策略包 / 合规即代码</div>
+        <div class="rmitems">
+          <div class="rmi" data-en>Open control packs (JSON/YAML)</div><div class="rmi" data-zh>开放控制包（JSON/YAML）</div>
+          <div class="rmi" data-en>Benchmark pack marketplace</div><div class="rmi" data-zh>基准测试包市场</div>
+          <div class="rmi" data-en>Public API + SDK</div><div class="rmi" data-zh>公开 API + SDK</div>
+          <div class="rmi" data-en>Partner reseller programme</div><div class="rmi" data-zh>合作伙伴分销计划</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-inner">
+      <div class="cta-eye" data-en>// ready to ship?</div><div class="cta-eye" data-zh>// 准备好出发了吗？</div>
+      <div class="cta-title" data-en>Stop guessing.<br>Start shipping.</div>
+      <div class="cta-title" data-zh>停止猜测。<br>开始交付。</div>
+      <p class="cta-sub" data-en>Run your first launch readiness assessment in under 10 minutes. No source code. No consultants. Just your product spec and target market.</p>
+      <p class="cta-sub" data-zh>10 分钟内完成首次上市就绪评估。不需要源代码，不需要顾问，只需要产品说明和目标市场。</p>
+      <div class="cta-btns">
+        <a href="#" class="btn-p"><span data-en>▶ Request Early Access</span><span data-zh>▶ 申请早期访问</span></a>
+        <a href="mailto:hello@ai-compliance.os" class="btn-o"><span data-en>Talk to the team →</span><span data-zh>联系我们 →</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="logo-box" style="width:24px;height:24px;font-size:10px;">OS</div>
+    <span style="font-size:13px;font-weight:700;">AI Compliance Launch OS</span>
+  </div>
+  <span class="fcopy" data-en>© 2025 · compliance engineering, not consulting</span>
+  <span class="fcopy" data-zh>© 2025 · 合规工程，不是咨询</span>
+  <div class="flinks">
+    <a href="#" data-en>Docs</a><a href="#" data-zh>文档</a>
+    <a href="#" data-en>Privacy</a><a href="#" data-zh>隐私政策</a>
+    <a href="mailto:hello@ai-compliance.os" data-en>Contact</a>
+    <a href="mailto:hello@ai-compliance.os" data-zh>联系我们</a>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('zh', lang === 'zh');
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === (lang === 'zh' ? '中文' : 'EN'));
+  });
+  document.documentElement.lang = lang === 'zh' ? 'zh' : 'en';
+}
+
+// scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.mcard,.arow,.pcard,.dcard,.rmp,.nc').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(14px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>
